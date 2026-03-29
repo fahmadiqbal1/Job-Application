@@ -61,30 +61,26 @@ def _domain_to_known_portal(domain: str) -> Optional[str]:
     """Map a domain to a known portal name, or None."""
     domain_lower = domain.lower()
     # Simple heuristic mapping
-    if "hiredly" in domain_lower:
-        return "hiredly"
-    if "jobstreet" in domain_lower:
-        return "jobstreet"
-    if "jobsdb" in domain_lower:
-        return "jobsdb"
-    if "kalibrr" in domain_lower:
-        return "kalibrr"
-    if "linkedin" in domain_lower:
-        return "linkedin"
-    if "indeed" in domain_lower:
-        return "indeed"
-    if "glassdoor" in domain_lower:
-        return "glassdoor"
-    if "monster" in domain_lower:
-        return "monster"
-    if "dice" in domain_lower:
-        return "dice"
-    if "reed" in domain_lower:
-        return "reed"
-    if "remotive" in domain_lower:
-        return "remotive"
-    if "we work remotely" in domain_lower or "weworkremotely" in domain_lower:
-        return "we_work_remotely"
+    portal_mappings = {
+        "hiredly": "hiredly",
+        "jobstreet": "jobstreet",
+        "jobsdb": "jobsdb",
+        "kalibrr": "kalibrr",
+        "maukerja": "maukerja",
+        "linkedin": "linkedin",
+        "indeed": "indeed",
+        "glassdoor": "glassdoor",
+        "monster": "monster",
+        "dice": "dice",
+        "reed": "reed",
+        "remotive": "remotive",
+        "weworkremotely": "we-work-remotely",
+    }
+
+    for key, portal_name in portal_mappings.items():
+        if key in domain_lower:
+            return portal_name
+
     return None
 
 
