@@ -1,0 +1,49 @@
+# Core
+python-dotenv==1.0.1
+pydantic-settings==2.2.1
+
+# LangChain / LangGraph (matching deer-flow pins)
+langgraph>=1.0.6,<1.0.10
+langchain>=1.2.3
+langchain-openai>=1.1.7
+langchain-core
+
+# Playwright (scraping + browser automation)
+playwright==1.44.0
+
+# LLM
+openai>=1.30.0
+
+# Telegram
+python-telegram-bot==21.3
+
+# PDF
+pdfplumber==0.11.0
+
+# Email
+aiosmtplib==3.0.1
+
+# Utilities
+httpx==0.27.0
+orjson==3.10.3
+
+# Web server
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+websockets>=12.0
+
+# Multi-model AI support
+langchain-anthropic>=0.1.0
+langchain-google-genai>=1.0.0
+
+# PageIndex RAG
+pageindex>=0.1.0
+litellm>=1.82.0
+pymupdf>=1.26.0
+
+# Universal scraping
+beautifulsoup4>=4.12.0
+lxml>=5.2.0
+extruct>=0.17.0
+w3lib>=2.1.0
