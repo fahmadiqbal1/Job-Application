@@ -2,6 +2,7 @@
 
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
 import asyncio
+from security_config import SecurityConfig
 
 
 PORTALS = {
@@ -277,12 +278,11 @@ async def verify_selectors(portal: str) -> dict:
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
+        # Use random user agent and viewport to avoid detection
+        sec = SecurityConfig()
         context = await browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-            ),
-            viewport={"width": 1366, "height": 768},
+            user_agent=sec.get_random_user_agent(),
+            viewport=sec.get_random_viewport(),
         )
         page = await context.new_page()
 

@@ -17,6 +17,7 @@ from playwright.async_api import async_playwright, Browser, Page, BrowserContext
 
 from config.settings import settings
 from api.websocket import emit_screenshot
+from security_config import SecurityConfig
 
 logger = logging.getLogger(__name__)
 
@@ -40,15 +41,14 @@ class BrowserSession:
             headless=False,
             args=["--disable-blink-features=AutomationControlled"],
         )
+        # Use random user agent and viewport to avoid detection
+        sec = SecurityConfig()
         self.context = await self.browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-            ),
-            viewport={"width": 1366, "height": 768},
+            user_agent=sec.get_random_user_agent(),
+            viewport=sec.get_random_viewport(),
         )
         self.page = await self.context.new_page()
-        logger.info("BrowserSession initialized")
+        logger.info(f"BrowserSession initialized (UA: {self.context.browser.version}, viewport: {sec.get_random_viewport()})")
 
     async def start_screenshot_loop(self) -> None:
         """Start the background screenshot streaming task."""
