@@ -425,3 +425,54 @@ async def websocket_browser(websocket: WebSocket):
     except Exception as e:
         logger.error(f"WebSocket browser error: {e}")
         browser_manager.disconnect(websocket)
+
+
+# ── Prompt Library ──
+
+
+@router.get("/prompts")
+async def get_all_prompts():
+    """Get all prompts from the library."""
+    from state.prompts import load_prompts
+
+    prompts = load_prompts()
+    return {"prompts": prompts}
+
+
+@router.get("/prompts/{prompt_key}")
+async def get_prompt(prompt_key: str):
+    """Get a single prompt by key."""
+    from state.prompts import get_prompt
+
+    prompt_text = get_prompt(prompt_key)
+    if not prompt_text:
+        raise HTTPException(status_code=404, detail=f"Prompt '{prompt_key}' not found")
+
+    return {"key": prompt_key, "text": prompt_text}
+
+
+@router.put("/prompts/{prompt_key}")
+async def update_prompt(prompt_key: str, request: dict):
+    """Update a single prompt."""
+    from state.prompts import load_prompts, update_prompt as _update_prompt
+
+    prompts = load_prompts()
+    if prompt_key not in prompts:
+        raise HTTPException(status_code=404, detail=f"Prompt '{prompt_key}' not found")
+
+    new_text = request.get("text", "")
+    if not new_text:
+        raise HTTPException(status_code=400, detail="Prompt text cannot be empty")
+
+    _update_prompt(prompt_key, new_text)
+    return {"key": prompt_key, "status": "updated"}
+
+
+@router.post("/prompts/reset")
+async def reset_prompts_to_defaults():
+    """Reset all prompts to defaults."""
+    from state.prompts import _get_defaults, save_prompts
+
+    defaults = _get_defaults()
+    save_prompts(defaults)
+    return {"status": "reset", "prompt_count": len(defaults)}
