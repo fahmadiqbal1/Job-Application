@@ -27,7 +27,7 @@ from api.websocket import (
 logger = logging.getLogger(__name__)
 
 
-async def run_pipeline(keywords: str, chat_id: str, stop_event: asyncio.Event) -> str:
+async def run_pipeline(keywords: str, chat_id: str, stop_event: asyncio.Event, run_id: str | None = None) -> str:
     """
     Run the full job application pipeline (5 phases).
 
@@ -42,11 +42,13 @@ async def run_pipeline(keywords: str, chat_id: str, stop_event: asyncio.Event) -
         keywords: Job search keywords.
         chat_id: Telegram chat ID to send updates to.
         stop_event: asyncio.Event that can be set to gracefully stop the pipeline.
+        run_id: Optional run_id (generated if not provided).
 
     Returns:
         The run_id of this execution.
     """
-    run_id = str(uuid.uuid4())
+    if not run_id:
+        run_id = str(uuid.uuid4())
 
     # Initialize state
     state: JobApplicationState = {
@@ -120,7 +122,9 @@ Work through all jobs and return updated state."""
         }
 
         ats_state = await ats_agent.ainvoke(ats_state, config=cfg(30))
-        state.update(ats_state)
+        # Selective merge — preserve messages list, only copy ats_scores and resume_edits
+        state["ats_scores"] = ats_state.get("ats_scores", state.get("ats_scores", {}))
+        state["resume_edits"] = ats_state.get("resume_edits", state.get("resume_edits", {}))
         save_state(state)
 
         if stop_event.is_set():

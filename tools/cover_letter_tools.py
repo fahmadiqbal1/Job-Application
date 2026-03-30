@@ -3,15 +3,16 @@
 import asyncio
 
 from langchain.tools import tool
-from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from config.resume import load_resume_text
+from config.model_factory import get_llm
+from config.settings import settings
 
 
 @tool("load_resume_context", parse_docstring=True)
 def load_resume_context() -> str:
-    """Load and validate Fahmad's resume from PDF.
+    """Load and validate resume from PDF.
 
     Returns:
         Structured text of resume content.
@@ -26,7 +27,7 @@ def load_resume_context() -> str:
 async def generate_cover_letter(
     job_description: str, company_name: str, job_title: str, resume_context: str
 ) -> str:
-    """Generate a tailored cover letter using GPT-4o.
+    """Generate a tailored cover letter.
 
     Args:
         job_description: Full job description text.
@@ -37,16 +38,23 @@ async def generate_cover_letter(
     Returns:
         Generated cover letter text.
     """
-    llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
+    llm = get_llm(settings.model_cover_letter, temperature=0.7)
 
-    system_prompt = """You are writing a cover letter as Fahmad Iqbal (fahmad_iqbal@hotmail.com, +92334-5115115).
+    # Format user contact info for signature
+    contact_line = settings.user_name or "Applicant"
+    if settings.user_email:
+        contact_line += f" | {settings.user_email}"
+    if settings.user_phone:
+        contact_line += f" | {settings.user_phone}"
+
+    system_prompt = f"""You are writing a cover letter as {settings.user_name or 'the applicant'}.
 
 Guidelines:
 - Write short, direct sentences. Avoid clichés like "I am excited to leverage my expertise".
 - Use quantified achievements from the resume.
 - Address the specific job requirements and company.
 - Keep it under 400 words.
-- Sign off with: Fahmad Iqbal | fahmad_iqbal@hotmail.com | +92334-5115115"""
+- Sign off with: {contact_line}"""
 
     user_prompt = f"""Job Title: {job_title}
 Company: {company_name}

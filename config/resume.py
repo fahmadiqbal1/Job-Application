@@ -8,7 +8,7 @@ from config.settings import settings
 
 def load_resume_text() -> str:
     """
-    Load and validate Fahmad's resume from PDF.
+    Load and validate resume from PDF.
 
     Returns:
         Plain text of all resume pages joined.

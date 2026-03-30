@@ -36,6 +36,16 @@ class Settings(BaseSettings):
     screenshots_dir: str
     ats_workspace_dir: str = "D:/Projects/Job Application/rag/workspace"
 
+    # User profile
+    user_name: str = ""
+    user_email: str = ""
+    user_phone: str = ""
+    user_linkedin_url: str = ""
+
+    # Daily automation
+    daily_search_keywords: str = ""  # if blank, no daily run
+    daily_run_hour: int = 7  # 7 AM default
+
     # Model selection per agent
     model_scraper: str = "gpt-4o-mini"
     model_ats: str = "gpt-4o"

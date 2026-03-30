@@ -34,9 +34,10 @@ class ATSScorer:
         """
         try:
             from config.model_factory import get_llm
+            from config.settings import settings
             from langchain_core.messages import HumanMessage
 
-            llm = get_llm("gpt-4o", temperature=0)
+            llm = get_llm(settings.model_ats, temperature=0)
 
             required_skills = jd_requirements.get("required_skills", [])
             years_exp = jd_requirements.get("years_experience", 0)

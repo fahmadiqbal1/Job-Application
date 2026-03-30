@@ -25,8 +25,9 @@ class JDAnalyzer:
         """Initialize PageIndex client."""
         try:
             from pageindex import PageIndexClient
+            from config.settings import settings
 
-            self._client = PageIndexClient(workspace=self.workspace_dir, model="gpt-4o-mini")
+            self._client = PageIndexClient(workspace=self.workspace_dir, model=settings.model_ats)
         except ImportError:
             logger.error("PageIndex not installed")
             self._client = None
@@ -95,9 +96,10 @@ class JDAnalyzer:
 
             # Use LLM to extract requirements
             from config.model_factory import get_llm
+            from config.settings import settings
             from langchain_core.messages import HumanMessage
 
-            llm = get_llm("gpt-4o", temperature=0)
+            llm = get_llm(settings.model_ats, temperature=0)
 
             prompt = HumanMessage(
                 content=f"""Extract structured requirements from this JD.

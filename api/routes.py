@@ -3,6 +3,7 @@
 import logging
 from typing import Optional
 from pathlib import Path
+from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
@@ -34,12 +35,15 @@ async def get_status():
     pending = get_pending_job_ids()
 
     if run:
+        started_at_iso = None
+        if run.started_at:
+            started_at_iso = datetime.fromtimestamp(run.started_at).isoformat()
         return {
             "is_active": True,
             "run_id": run.run_id,
             "phase": run.phase,
             "phase_detail": run.phase_detail,
-            "started_at": run.started_at.isoformat() if run.started_at else None,
+            "started_at": started_at_iso,
             "pending_confirmations": list(pending),
         }
     else:
@@ -75,7 +79,7 @@ async def start_search(request: SearchRequest):
 
     # Create the run in background
     async def run_bg():
-        await run_pipeline(request.keywords, chat_id, asyncio.Event())
+        await run_pipeline(request.keywords, chat_id, asyncio.Event(), run_id=run_id)
 
     asyncio.create_task(run_bg())
 

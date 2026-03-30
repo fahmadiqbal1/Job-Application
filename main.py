@@ -15,7 +15,8 @@ import uvicorn
 
 from config.settings import settings
 from config.portals import verify_selectors
-from bot.telegram_bot import TelegramBot, set_main_loop
+from bot.telegram_bot import TelegramBot
+from state.confirmation import set_main_loop
 from api.routes import router as api_router
 
 # Configure logging
@@ -60,7 +61,7 @@ async def serve_spa(full_path: str):
 # Mount static files if they exist
 frontend_dist = Path(__file__).parent / "frontend" / "dist"
 if frontend_dist.exists():
-    app.mount("/static", StaticFiles(directory=frontend_dist / "assets"), name="static")
+    app.mount("/assets", StaticFiles(directory=frontend_dist / "assets"), name="assets")
 
 
 async def run_telegram_bot():

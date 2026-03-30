@@ -107,15 +107,20 @@ class BrowserSession:
 
 # Global singleton instance
 _session: Optional[BrowserSession] = None
+_session_lock = asyncio.Lock()
 
 
 async def get_session() -> BrowserSession:
-    """Get or create the global BrowserSession singleton."""
+    """Get or create the global BrowserSession singleton (thread-safe)."""
     global _session
-    if _session is None:
-        _session = BrowserSession()
-        await _session.initialize()
-    return _session
+    if _session is not None:
+        return _session
+
+    async with _session_lock:
+        if _session is None:
+            _session = BrowserSession()
+            await _session.initialize()
+        return _session
 
 
 async def close_session() -> None:

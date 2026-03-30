@@ -47,9 +47,10 @@ class ResumeEditor:
                 }
 
             from config.model_factory import get_llm
+            from config.settings import settings
             from langchain_core.messages import HumanMessage
 
-            llm = get_llm("gpt-4o", temperature=0.5)
+            llm = get_llm(settings.model_ats, temperature=0.5)
 
             keywords_str = ", ".join(missing_keywords[:5])  # Top 5 most critical
 

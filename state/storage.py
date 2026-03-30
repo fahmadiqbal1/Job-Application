@@ -3,7 +3,7 @@
 import orjson
 from pathlib import Path
 
-RUNS_DIR = Path("D:/Projects/Job Application/state/runs")
+RUNS_DIR = Path(__file__).parent / "runs"
 
 
 def save_state(state: dict) -> None:
@@ -31,3 +31,7 @@ def load_latest_state() -> dict | None:
         return None
     latest = max(files, key=lambda p: p.stat().st_mtime)
     return orjson.loads(latest.read_bytes())
+
+
+# Alias for backward compatibility
+load_run_state = load_state
