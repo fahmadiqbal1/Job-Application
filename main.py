@@ -18,6 +18,7 @@ from config.portals import verify_selectors
 from bot.telegram_bot import TelegramBot
 from state.confirmation import set_main_loop
 from api.routes import router as api_router
+from scheduler import schedule_daily_run
 
 # Configure logging
 logging.basicConfig(
@@ -128,11 +129,12 @@ async def main():
             except Exception as e:
                 logger.warning(f"{portal} selector verification failed: {e}")
 
-        # Run Telegram bot and web server concurrently
+        # Run Telegram bot, web server, and daily scheduler concurrently
         logger.info("Starting services...")
         await asyncio.gather(
             run_telegram_bot(),
             run_webserver(),
+            schedule_daily_run(),
             return_exceptions=True,
         )
 

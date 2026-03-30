@@ -476,3 +476,324 @@ async def reset_prompts_to_defaults():
     defaults = _get_defaults()
     save_prompts(defaults)
     return {"status": "reset", "prompt_count": len(defaults)}
+
+
+# ── Career Tools ──
+
+
+@router.post("/career/resume/analyze")
+async def analyze_resume(request: dict):
+    """
+    Analyze resume for quality and ATS issues.
+
+    Steps:
+    1. Generic check: flag AI-signature phrases, vague metrics, missing context
+    2. Quality score: bullet-by-bullet scoring on [Verb]+[Did]+[Metric] formula
+
+    Returns generic check flags + quality scores.
+    """
+    from tools.career_tools import analyze_resume_quality
+    from state.storage import load_latest_state
+
+    resume_text = request.get("resume_text")
+    if not resume_text:
+        # Try to load from latest state
+        state = load_latest_state()
+        if not state:
+            raise HTTPException(status_code=400, detail="Resume text required or no recent run")
+        # For now, return placeholder — full implementation requires resume content
+        return {"error": "Resume text required"}
+
+    result_str = await analyze_resume_quality(resume_text)
+    try:
+        import json
+        result = json.loads(result_str)
+    except:
+        result = {"error": "Could not parse analysis"}
+
+    return result
+
+
+@router.post("/career/resume/interview-bullet")
+async def interview_bullet(request: dict):
+    """
+    Step-by-step interview mode for improving a weak resume bullet.
+
+    Steps: 1 (project context) → 2 (scope/scale) → 3 (metric/outcome) → compose final bullet.
+
+    Returns:
+    - Step 1/2: question for user to answer
+    - Step 3: final composed bullet + accept/reject
+    """
+    from config.model_factory import get_llm
+    from config.settings import settings
+    from state.prompts import get_prompt
+    from langchain_core.messages import HumanMessage
+    import json
+
+    bullet = request.get("bullet", "")
+    step = request.get("step", 1)  # 1, 2, or 3
+    answers = request.get("answers", [])  # Previous answers from steps 1-2
+
+    if not bullet:
+        raise HTTPException(status_code=400, detail="Bullet text required")
+
+    try:
+        if step in [1, 2, 3]:
+            # Steps 1-2: Ask follow-up question
+            if step <= 2:
+                prompt_template = get_prompt("resume_bullet_interview")
+                if not prompt_template:
+                    return {"error": "Prompt not found"}
+
+                llm = get_llm(settings.model_ats, temperature=0)
+                prompt = HumanMessage(
+                    content=prompt_template.format(
+                        bullet=bullet, step=step, answers=json.dumps(answers)
+                    )
+                )
+                response = await llm.ainvoke([prompt])
+                return {"step": step, "question": response.content.strip()}
+
+            # Step 3: Compose final bullet
+            else:
+                prompt_template = get_prompt("resume_bullet_compose")
+                if not prompt_template:
+                    return {"error": "Prompt not found"}
+
+                llm = get_llm(settings.model_ats, temperature=0.5)
+                prompt = HumanMessage(
+                    content=prompt_template.format(
+                        bullet=bullet, answers=json.dumps(answers)
+                    )
+                )
+                response = await llm.ainvoke([prompt])
+                final_bullet = response.content.strip()
+                return {"step": 3, "final_bullet": final_bullet}
+        else:
+            raise HTTPException(status_code=400, detail="Step must be 1, 2, or 3")
+
+    except Exception as e:
+        logger.error(f"Interview bullet failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/career/linkedin/optimize")
+async def optimize_linkedin(request: dict):
+    """
+    Optimize LinkedIn profile for goal (attract PM roles, build AI authority, etc.).
+
+    Returns section-by-section rewrites: headline, about, experience, skills, featured, CTA.
+    """
+    from tools.career_tools import optimize_linkedin_profile
+
+    profile_text = request.get("profile_text", "")
+    goal = request.get("goal", "")
+
+    if not profile_text or not goal:
+        raise HTTPException(status_code=400, detail="profile_text and goal required")
+
+    result_str = await optimize_linkedin_profile(profile_text, goal)
+    try:
+        import json
+        result = json.loads(result_str)
+    except:
+        result = {"error": "Could not parse optimization results"}
+
+    return result
+
+
+@router.post("/career/hiring-managers")
+async def search_hiring_managers(request: dict):
+    """
+    Search Bing for LinkedIn posts from hiring managers in target role/location.
+
+    Uses 3 search patterns to find recent posts mentioning "I'm hiring", "DM me", etc.
+
+    Returns list of: [{name, company, post_snippet, url, pattern: A|B|C}]
+    """
+    from tools.career_tools import search_hiring_managers
+
+    role = request.get("role", "")
+    industry = request.get("industry", "")
+    location = request.get("location", "")
+
+    if not role:
+        raise HTTPException(status_code=400, detail="role required")
+
+    result_str = await search_hiring_managers(role, industry, location)
+    try:
+        import json
+        result = json.loads(result_str)
+    except:
+        result = {"error": "Could not parse search results"}
+
+    return result
+
+
+@router.post("/career/hiring-managers/draft-dm")
+async def draft_hiring_manager_dm(request: dict):
+    """
+    Generate a personalized DM for a hiring manager based on their post.
+
+    Args:
+        post_snippet: The hiring manager's post text
+        user_background: User's background summary
+        role: Target role
+
+    Returns:
+        Personalized DM text (max 5 sentences)
+    """
+    from config.model_factory import get_llm
+    from config.settings import settings
+    from state.prompts import get_prompt
+    from langchain_core.messages import HumanMessage
+
+    post_snippet = request.get("post_snippet", "")
+    user_background = request.get("user_background", "")
+    role = request.get("role", "")
+
+    if not post_snippet or not role:
+        raise HTTPException(status_code=400, detail="post_snippet and role required")
+
+    try:
+        prompt_template = get_prompt("hiring_manager_dm")
+        if not prompt_template:
+            return {"error": "Prompt not found"}
+
+        llm = get_llm(settings.model_ats, temperature=0.7)
+        prompt = HumanMessage(
+            content=prompt_template.format(
+                post_snippet=post_snippet,
+                user_background=user_background,
+                role=role,
+            )
+        )
+        response = await llm.ainvoke([prompt])
+        return {"dm": response.content.strip()}
+
+    except Exception as e:
+        logger.error(f"DM generation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/career/linkedin/post/ideas")
+async def get_linkedin_post_ideas():
+    """Get categories and starter ideas for LinkedIn posts."""
+    categories = [
+        {
+            "id": "reintroduction",
+            "label": "Reintroduction",
+            "description": "Introduce yourself with your current role/background",
+        },
+        {
+            "id": "lesson",
+            "label": "Lessons Learned",
+            "description": "Share a lesson from a recent project or challenge",
+        },
+        {
+            "id": "hot_take",
+            "label": "Hot Take",
+            "description": "Share a contrarian industry opinion with backing",
+        },
+        {
+            "id": "insight",
+            "label": "Industry Insight",
+            "description": "Share something non-obvious you've noticed in your field",
+        },
+        {
+            "id": "tool",
+            "label": "Tool Tip",
+            "description": "Share your experience using an AI tool or technology",
+        },
+    ]
+    return {"categories": categories}
+
+
+@router.post("/career/linkedin/post")
+async def generate_linkedin_post(request: dict):
+    """
+    Generate 3 LinkedIn post options in a given category.
+
+    Args:
+        category: Post category (reintroduction|lesson|hot_take|insight|tool)
+        background: User's background/context
+
+    Returns:
+        3 editable post options
+    """
+    from tools.career_tools import generate_linkedin_post
+
+    category = request.get("category", "")
+    background = request.get("background", "")
+
+    if not category or not background:
+        raise HTTPException(status_code=400, detail="category and background required")
+
+    result_str = await generate_linkedin_post(category, background)
+    try:
+        import json
+        result = json.loads(result_str)
+    except:
+        result = {"error": "Could not generate posts"}
+
+    return result
+
+
+@router.post("/career/interview/prep")
+async def generate_interview_prep(request: dict):
+    """
+    Generate interview prep with likely questions, talking points, and human touches.
+
+    Uses job description + resume to create a quick reference card (not a script).
+
+    Args:
+        jd: Job description text
+        resume_text: User's resume text (or auto-loaded if not provided)
+
+    Returns:
+        8 likely interview questions with bullet-point talking points + human touch suggestions
+    """
+    from config.model_factory import get_llm
+    from config.settings import settings
+    from state.prompts import get_prompt
+    from config.resume import load_resume_text
+    from langchain_core.messages import HumanMessage
+    import json
+
+    jd = request.get("jd", "")
+    resume_text = request.get("resume_text")
+
+    if not jd:
+        raise HTTPException(status_code=400, detail="jd (job description) required")
+
+    # Auto-load resume if not provided
+    if not resume_text:
+        try:
+            resume_text = load_resume_text()
+        except Exception as e:
+            return {"error": f"Could not load resume: {str(e)}"}
+
+    try:
+        prompt_template = get_prompt("interview_prep")
+        if not prompt_template:
+            return {"error": "Prompt not found"}
+
+        llm = get_llm(settings.model_ats, temperature=0.7)
+        prompt = HumanMessage(
+            content=prompt_template.format(jd=jd[:2000], resume=resume_text[:2000])
+        )
+        response = await llm.ainvoke([prompt])
+        text = response.content.strip()
+
+        # Parse JSON response
+        json_match = re.search(r"\{.*\}", text, re.DOTALL)
+        if json_match:
+            result = json.loads(json_match.group())
+            return result
+        else:
+            return {"error": "Could not parse interview prep"}
+
+    except Exception as e:
+        logger.error(f"Interview prep generation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
