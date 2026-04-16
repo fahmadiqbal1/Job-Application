@@ -1,50 +1,59 @@
 from pydantic_settings import BaseSettings
 from pathlib import Path
 
+# Project root — one level above this file
+PROJECT_ROOT = Path(__file__).parent.parent
+
 
 class Settings(BaseSettings):
     """Application configuration from .env"""
 
     # LLM API keys
-    openai_api_key: str
+    openai_api_key: str = ""
     anthropic_api_key: str = ""
     google_api_key: str = ""
 
+    # Default LLM
+    default_llm_provider: str = "anthropic"
+    default_model: str = "claude-sonnet-4-6"
+
     # Telegram
-    telegram_bot_token: str
-    telegram_allowed_users: str = ""  # comma-separated user IDs
+    telegram_bot_token: str = ""
+    telegram_allowed_users: str = ""
 
     # Email
     smtp_host: str = "smtp.gmail.com"
     smtp_port: int = 587
-    smtp_user: str
-    smtp_pass: str
-    notification_email: str
+    smtp_user: str = ""
+    smtp_pass: str = ""
+    notification_email: str = ""
 
     # Portal credentials
-    hiredly_email: str
-    hiredly_password: str
-    jobstreet_email: str
-    jobstreet_password: str
+    hiredly_email: str = ""
+    hiredly_password: str = ""
+    jobstreet_email: str = ""
+    jobstreet_password: str = ""
     linkedin_email: str = ""
     linkedin_password: str = ""
     indeed_email: str = ""
     indeed_password: str = ""
 
-    # Paths
-    resume_path: str
-    screenshots_dir: str
-    ats_workspace_dir: str = "D:/Projects/Job Application/rag/workspace"
+    # Career platform paths (resolved relative to project root if not set)
+    data_dir: str = str(PROJECT_ROOT / "data")
+    scripts_dir: str = str(PROJECT_ROOT / "scripts")
+    prompts_dir: str = str(PROJECT_ROOT / "prompts")
+    templates_dir: str = str(PROJECT_ROOT / "templates")
+    static_dir: str = str(PROJECT_ROOT / "static")
+    node_path: str = "node"
 
-    # User profile
-    user_name: str = ""
-    user_email: str = ""
-    user_phone: str = ""
-    user_linkedin_url: str = ""
+    # Legacy paths (kept for v1 compatibility)
+    resume_path: str = ""
+    screenshots_dir: str = str(PROJECT_ROOT / "data" / "screenshots")
+    ats_workspace_dir: str = str(PROJECT_ROOT / "rag" / "workspace")
 
     # Daily automation
-    daily_search_keywords: str = ""  # if blank, no daily run
-    daily_run_hour: int = 7  # 7 AM default
+    daily_search_keywords: str = ""
+    daily_run_hour: int = 7
 
     # Model selection per agent
     model_scraper: str = "gpt-4o-mini"

@@ -1,0 +1,843 @@
+# Portal Scanner Configuration
+# Used by /career-ops scan to discover new offers automatically.
+#
+# Strategy (3 levels):
+#   1. Playwright → careers_url of each company (real-time, reliable)
+#   2. Greenhouse API → structured JSON (fast, Greenhouse-only)
+#   3. WebSearch with site: filters (broad discovery, may be stale)
+#
+# IMPORTANT: Each company in tracked_companies MUST have careers_url.
+#
+# HOW TO CUSTOMIZE:
+#   1. Copy this file to portals.yml in the project root
+#   2. Edit title_filter.positive with YOUR target role keywords
+#   3. Add/remove companies in tracked_companies
+#   4. Adjust search_queries for your preferred job boards
+#   5. Set enabled: false on companies you don't care about
+
+# -- Title filter --
+# The scanner uses these keywords to decide if a title is relevant.
+# At least 1 positive must match AND 0 negatives must match (case-insensitive).
+
+title_filter:
+  positive:
+    # -- Operations & Facilities Management (Primary target) --
+    - "Operations Manager"
+    - "Maintenance Manager"
+    - "Facilities Manager"
+    - "Facilities Management"
+    - "Building Manager"
+    - "Property Manager"
+    - "Estate Manager"
+    - "Asset Manager"
+    - "Facility Operations"
+    - "O&M Manager"
+    - "Site Manager"
+    - "Project Manager"
+    - "Construction Manager"
+    - "Infrastructure Manager"
+    # -- Technical Program & Digital Transformation --
+    - "Technical Program Manager"
+    - "Programme Manager"
+    - "Program Manager"
+    - "Digital Transformation"
+    - "Transformation Manager"
+    - "IT Project Manager"
+    - "Technology Manager"
+    - "ERP Manager"
+    - "CRM Manager"
+    - "Systems Manager"
+    # -- Director / Head / Senior Leadership --
+    - "Director of Operations"
+    - "Head of Operations"
+    - "Head of Facilities"
+    - "Head of Maintenance"
+    - "General Manager"
+    - "Country Manager"
+    - "VP Operations"
+    # -- AI-enabled Operations (Unique angle) --
+    - "AI"
+    - "Automation"
+    - "Smart Building"
+    - "PropTech"
+    - "Intelligent Building"
+    - "CAFM"
+    - "CMMS"
+  negative:
+    - "Junior"
+    - "Intern"
+    - "Graduate"
+    - "Entry Level"
+    - "iOS"
+    - "Android"
+    - "Embedded"
+    - "Firmware"
+    - "Blockchain"
+    - "Web3"
+    - "Crypto"
+    - "Accountant"
+    - "Cleaner"
+    - "Technician"
+    - "Electrician"
+    - "Plumber"
+  seniority_boost:
+    - "Senior"
+    - "Lead"
+    - "Head"
+    - "Director"
+    - "GM"
+    - "VP"
+    - "Chief"
+    - "Principal"
+
+# -- Search queries --
+# Malaysia-focused operations, facilities, technical program management roles
+
+search_queries:
+
+  # -- JobStreet Malaysia (primary job board) --
+  - name: JobStreet — Senior Operations Manager Malaysia
+    query: 'site:my.jobstreet.com "Operations Manager" OR "Senior Operations Manager" Malaysia'
+    enabled: true
+
+  - name: JobStreet — Facilities & Maintenance Manager Malaysia
+    query: 'site:my.jobstreet.com "Facilities Manager" OR "Maintenance Manager" OR "Building Manager" Malaysia senior'
+    enabled: true
+
+  - name: JobStreet — Technical Program Manager Malaysia
+    query: 'site:my.jobstreet.com "Technical Program Manager" OR "Programme Manager" OR "Project Director" Malaysia'
+    enabled: true
+
+  - name: JobStreet — Digital Transformation Malaysia
+    query: 'site:my.jobstreet.com "Digital Transformation" OR "Head of Operations" OR "Director of Operations" Malaysia'
+    enabled: true
+
+  - name: JobStreet — Head of Facilities Malaysia
+    query: 'site:my.jobstreet.com "Head of Facilities" OR "GM Facilities" OR "VP Operations" Malaysia'
+    enabled: true
+
+  # -- LinkedIn Malaysia --
+  - name: LinkedIn — Senior Operations Manager Malaysia
+    query: 'site:linkedin.com/jobs "Senior Operations Manager" OR "Head of Operations" Malaysia'
+    enabled: true
+
+  - name: LinkedIn — Facilities Management Malaysia
+    query: 'site:linkedin.com/jobs "Facilities Manager" OR "Maintenance Manager" OR "Estate Manager" Kuala Lumpur OR Malaysia'
+    enabled: true
+
+  - name: LinkedIn — Technical Program Manager Malaysia
+    query: 'site:linkedin.com/jobs "Technical Program Manager" OR "Programme Manager" Malaysia'
+    enabled: true
+
+  - name: LinkedIn — General Manager Operations Malaysia
+    query: 'site:linkedin.com/jobs "General Manager" OR "Country Manager" operations Malaysia relocation'
+    enabled: true
+
+  - name: LinkedIn — PropTech & Smart Building Malaysia
+    query: 'site:linkedin.com/jobs "PropTech" OR "Smart Building" OR "Intelligent Building" OR "AI" facilities Malaysia'
+    enabled: true
+
+  # -- Indeed Malaysia --
+  - name: Indeed Malaysia — Operations Director
+    query: 'site:my.indeed.com "Director Operations" OR "Head of Operations" OR "Operations Director" Malaysia'
+    enabled: true
+
+  - name: Indeed Malaysia — Facilities Management
+    query: 'site:my.indeed.com "Facilities Management" OR "Building Management" OR "O&M Manager" Malaysia senior'
+    enabled: true
+
+  # -- Glassdoor Malaysia --
+  - name: Glassdoor — Senior Ops Manager Malaysia
+    query: 'site:glassdoor.com "Operations Manager" OR "Facilities Manager" Malaysia "Kuala Lumpur" OR "Selangor" senior'
+    enabled: true
+
+  # -- Property & Real Estate Portals --
+  - name: PropertyGuru — Property Management Roles
+    query: '"property manager" OR "estate manager" OR "facilities manager" Malaysia site:propertyguru.com.my OR site:iproperty.com.my'
+    enabled: true
+
+  # -- Headhunter / Executive Search Malaysia --
+  - name: Michael Page Malaysia — Ops & Facilities
+    query: 'site:michaelpage.com.my "Operations Manager" OR "Facilities Manager" OR "Project Director" Malaysia'
+    enabled: true
+
+  - name: Robert Walters Malaysia — Ops & PM
+    query: 'site:robertwalters.com.my "Operations Manager" OR "Technical Programme Manager" OR "Director" Malaysia'
+    enabled: true
+
+  - name: Kelly Services Malaysia — Ops Roles
+    query: 'site:kellyservices.com.my "Operations" OR "Facilities" OR "Project Manager" senior Malaysia'
+    enabled: true
+
+  # -- Tech companies with Malaysia operations --
+  - name: Grab Malaysia — Operations & Program Roles
+    query: 'site:grab.careers "Operations" OR "Program Manager" OR "Facilities" Malaysia'
+    enabled: true
+
+  - name: Shopee/Sea Malaysia — Ops & PM
+    query: 'site:careers.shopee.com OR site:sea.com "Operations Manager" OR "Programme Manager" Malaysia'
+    enabled: true
+
+  - name: Axiata Group — Operations Roles
+    query: 'site:axiata.com/careers "Operations Manager" OR "Technology Manager" OR "Programme Manager" Malaysia'
+    enabled: true
+
+  # -- Property & Facilities MNCs in Malaysia --
+  - name: CBRE Malaysia — Facilities & Operations
+    query: '"CBRE" OR "CBRE Malaysia" "Facilities Manager" OR "Operations Manager" OR "Senior" Malaysia site:cbre.com.my OR site:linkedin.com/jobs'
+    enabled: true
+
+  - name: JLL Malaysia — Operations & Facilities
+    query: '"JLL Malaysia" OR "Jones Lang LaSalle" "Facilities Manager" OR "Operations" OR "Senior" site:jll.com.my OR site:linkedin.com/jobs'
+    enabled: true
+
+  - name: Colliers Malaysia — Operations Roles
+    query: '"Colliers Malaysia" "Operations" OR "Facilities" OR "Property Manager" site:colliers.com OR site:linkedin.com/jobs'
+    enabled: true
+
+  # -- High-paying sectors (Oil & Gas, Infrastructure, Data Centers) --
+  - name: Petronas — Operations & Technical Manager
+    query: 'site:petronascareer.com.my OR "Petronas" "Operations Manager" OR "Technical Manager" OR "Programme Manager"'
+    enabled: true
+
+  - name: Data Center & Cloud — Malaysia Ops
+    query: '"Data Center" OR "Cloud" "Facilities Manager" OR "Operations Manager" OR "Critical Infrastructure" Malaysia site:linkedin.com/jobs'
+    enabled: true
+
+  - name: IHH Healthcare Malaysia — Operations
+    query: '"IHH Healthcare" OR "Parkway Pantai" "Operations Manager" OR "Project Director" OR "Facilities" Malaysia'
+    enabled: true
+
+# -- Tracked companies (Malaysia / APAC) --
+# Malaysia and APAC companies whose career pages are checked directly.
+
+tracked_companies_my:
+
+  # -- Property / Real Estate / Facilities (Malaysia) --
+
+  - name: Sime Darby Property
+    careers_url: https://www.simedarbyproperty.com/careers
+    scan_method: websearch
+    scan_query: '"Sime Darby Property" careers "Operations" OR "Facilities" OR "Project Manager"'
+    notes: "Malaysia GLC. Large property developer. Strong ops roles."
+    enabled: true
+
+  - name: IGB Corporation
+    careers_url: https://www.igb.com.my/careers
+    scan_method: websearch
+    scan_query: '"IGB" OR "IGB REIT" careers "Facilities" OR "Operations" OR "Building Manager"'
+    notes: "KL. Mixed-use property, malls, offices."
+    enabled: true
+
+  - name: Sunway Group
+    careers_url: https://career.sunway.com.my
+    scan_method: websearch
+    scan_query: 'site:career.sunway.com.my OR "Sunway Group" careers "Operations" OR "Facilities" OR "Project Director"'
+    notes: "Diversified: property, construction, healthcare, education."
+    enabled: true
+
+  - name: IOI Properties
+    careers_url: https://career.ioigroup.com
+    scan_method: websearch
+    scan_query: '"IOI Properties" careers "Operations Manager" OR "Facilities Manager" OR "Project Manager"'
+    notes: "Selangor. Large property group."
+    enabled: true
+
+  - name: Mah Sing Group
+    careers_url: https://www.mahsing.com.my/careers
+    scan_method: websearch
+    scan_query: '"Mah Sing" careers "Operations" OR "Project Manager" OR "Technical Manager"'
+    notes: "KL property developer."
+    enabled: true
+
+  - name: SP Setia
+    careers_url: https://www.spsetia.com/careers
+    scan_method: websearch
+    scan_query: '"SP Setia" careers "Operations" OR "Facilities" OR "Project Director"'
+    notes: "KL property developer GLC."
+    enabled: true
+
+  - name: KLCC Property Holdings
+    careers_url: https://www.klccprojectholdings.com.my/careers
+    scan_method: websearch
+    scan_query: '"KLCC" careers "Facilities Manager" OR "Operations" OR "Building Management"'
+    notes: "Operates Petronas Towers facilities."
+    enabled: true
+
+  - name: Pavilion REIT
+    careers_url: https://www.pavilion-reit.com/careers
+    scan_method: websearch
+    scan_query: '"Pavilion" OR "Pavilion REIT" careers "Facilities" OR "Operations" OR "Building"'
+    notes: "KL premium malls and commercial properties."
+    enabled: true
+
+  # -- Facilities Management MNCs (Malaysia offices) --
+
+  - name: CBRE Malaysia
+    careers_url: https://cbre.com.my/careers
+    scan_method: websearch
+    scan_query: '"CBRE Malaysia" careers "Facilities Manager" OR "Operations Manager" OR "Project Manager" senior'
+    notes: "Top global FM company. Strong MY presence."
+    enabled: true
+
+  - name: JLL Malaysia
+    careers_url: https://www.jll.com.my/en/careers
+    scan_method: websearch
+    scan_query: '"JLL Malaysia" OR "Jones Lang LaSalle Malaysia" careers "Facilities" OR "Operations" OR "Senior Manager"'
+    notes: "Global FM leader. Malaysia HQ in KL."
+    enabled: true
+
+  - name: Cushman & Wakefield Malaysia
+    careers_url: https://careers.cushmanwakefield.com
+    scan_method: websearch
+    scan_query: '"Cushman Wakefield Malaysia" careers "Facilities" OR "Operations" OR "Project Manager"'
+    notes: "Global property services. MY office active."
+    enabled: true
+
+  - name: Savills Malaysia
+    careers_url: https://www.savills.com.my/careers
+    scan_method: websearch
+    scan_query: '"Savills Malaysia" careers "Facilities" OR "Property Manager" OR "Operations"'
+    notes: "Global property consultant with MY practice."
+    enabled: true
+
+  - name: Knight Frank Malaysia
+    careers_url: https://www.knightfrank.com.my/careers
+    scan_method: websearch
+    scan_query: '"Knight Frank Malaysia" careers "Property Manager" OR "Facilities" OR "Operations Manager"'
+    notes: "UK property consultant. MY office."
+    enabled: true
+
+  # -- Infrastructure & Construction (Malaysia) --
+
+  - name: Gamuda Berhad
+    careers_url: https://www.gamuda.com.my/careers
+    scan_method: websearch
+    scan_query: '"Gamuda" careers "Operations Manager" OR "Project Director" OR "Programme Manager"'
+    notes: "Malaysia infrastructure giant. MRT, highways."
+    enabled: true
+
+  - name: IJM Corporation
+    careers_url: https://www.ijm.com/careers
+    scan_method: websearch
+    scan_query: '"IJM" careers "Operations Manager" OR "Project Manager" OR "Technical Manager"'
+    notes: "KL. Construction, property, infrastructure."
+    enabled: true
+
+  - name: MMC Corporation
+    careers_url: https://www.mmccorp.com.my/careers
+    scan_method: websearch
+    scan_query: '"MMC Corporation" careers "Operations" OR "Project Director" OR "Facilities"'
+    notes: "Ports, utilities, real estate."
+    enabled: true
+
+  - name: WCT Holdings
+    careers_url: https://www.wct.com.my/careers
+    scan_method: websearch
+    scan_query: '"WCT Holdings" careers "Operations Manager" OR "Project Manager" OR "Facilities"'
+    notes: "KL. Construction, property, and O&M."
+    enabled: true
+
+  # -- Healthcare (Malaysia) --
+
+  - name: IHH Healthcare / Parkway Pantai
+    careers_url: https://careers.ihh.com.my
+    scan_method: websearch
+    scan_query: '"IHH Healthcare" OR "Parkway Pantai" careers "Operations Manager" OR "Project Director" OR "Facilities"'
+    notes: "One of Asia's largest private healthcare groups."
+    enabled: true
+
+  - name: KPJ Healthcare
+    careers_url: https://www.kpj.com.my/careers
+    scan_method: websearch
+    scan_query: '"KPJ Healthcare" careers "Operations Manager" OR "Project Manager" OR "Technical Manager"'
+    notes: "Malaysia-listed hospital group."
+    enabled: true
+
+  # -- Data Centers & Tech Infrastructure Malaysia --
+
+  - name: YTL Digital Capital
+    careers_url: https://www.ytldigitalcapital.com/careers
+    scan_method: websearch
+    scan_query: '"YTL" OR "YTL Digital" careers "Operations" OR "Facilities" OR "Data Center Manager"'
+    notes: "AI data center rollout in Malaysia. High growth."
+    enabled: true
+
+  - name: Telhaus
+    careers_url: https://www.telhaus.com/careers
+    scan_method: websearch
+    scan_query: '"Telhaus" careers "Operations" OR "Facilities" OR "Data Center"'
+    notes: "MY data center operator."
+    enabled: true
+
+  - name: Bridge Data Centres
+    careers_url: https://www.bridgedatacentres.com/careers
+    scan_method: websearch
+    scan_query: '"Bridge Data Centres" OR "Bridge DC" careers "Operations" OR "Facilities Manager"'
+    notes: "APAC DC operator. Malaysia presence."
+    enabled: true
+
+  - name: Khazanah Nasional / GLC
+    careers_url: https://www.khazanah.com.my/careers
+    scan_method: websearch
+    scan_query: '"Khazanah" OR "Malaysia GLC" careers "Operations Director" OR "Programme Manager" OR "Head"'
+    notes: "Malaysia sovereign wealth fund. Multiple portfolio companies."
+    enabled: true
+
+  # -- Telco & Digital (Malaysia) --
+
+  - name: Maxis
+    careers_url: https://www.maxis.com.my/en/careers
+    scan_method: websearch
+    scan_query: 'site:maxis.com.my/careers "Operations Manager" OR "Technical Program Manager" OR "Digital Transformation"'
+    notes: "Leading Malaysian telco. Strong digital push."
+    enabled: true
+
+  - name: Axiata Group
+    careers_url: https://www.axiata.com/careers
+    scan_method: websearch
+    scan_query: 'site:axiata.com/careers "Operations" OR "Programme Manager" OR "Technology Manager"'
+    notes: "MY telco/digital holding company. Regional HQ."
+    enabled: true
+
+  - name: Celcom Digi (CelcomDigi)
+    careers_url: https://www.celcomdigi.com/careers
+    scan_method: websearch
+    scan_query: '"CelcomDigi" careers "Operations Manager" OR "Technical Manager" OR "Programme Manager"'
+    notes: "MY merged telco giant."
+    enabled: true
+
+  # -- Tech MNCs with large Malaysia operations --
+
+  - name: Grab Malaysia
+    careers_url: https://grab.careers
+    scan_method: websearch
+    scan_query: 'site:grab.careers "Operations Manager" OR "Programme Manager" OR "Technical Program" Malaysia'
+    notes: "SEA superapp. KL Engineering Hub."
+    enabled: true
+
+  - name: Shopee / Sea Group Malaysia
+    careers_url: https://careers.shopee.com.my
+    scan_method: websearch
+    scan_query: 'site:careers.shopee.com "Operations Manager" OR "Programme Manager" Malaysia'
+    notes: "SEA ecommerce giant. KL & PG offices."
+    enabled: true
+
+  - name: Microsoft Malaysia
+    careers_url: https://careers.microsoft.com
+    scan_method: websearch
+    scan_query: '"Microsoft Malaysia" careers "Operations Manager" OR "Technical Program Manager" OR "Programme Manager"'
+    notes: "Kuala Lumpur. Large ops and PM team."
+    enabled: true
+
+  - name: Amazon / AWS Malaysia
+    careers_url: https://amazon.jobs
+    scan_method: websearch
+    scan_query: '"Amazon Malaysia" OR "AWS Malaysia" careers "Operations Manager" OR "Technical Program Manager"'
+    notes: "AWS APAC growing. MY data center investment."
+    enabled: true
+
+  - name: Google Malaysia
+    careers_url: https://careers.google.com
+    scan_method: websearch
+    scan_query: '"Google Malaysia" careers "Operations Manager" OR "Technical Program Manager" OR "Programme Manager"'
+    notes: "KL office. Growing."
+    enabled: true
+
+  - name: Ashby — Solutions Architect
+    query: 'site:jobs.ashbyhq.com "Solutions Architect" AI OR automation remote'
+    enabled: true
+
+  - name: Ashby — AI Engineer
+    query: 'site:jobs.ashbyhq.com "AI Engineer" OR "LLM Engineer" OR "Forward Deployed" remote'
+    enabled: true
+
+  - name: Ashby — Agentic
+    query: 'site:jobs.ashbyhq.com "Agentic" OR "AI Agent" OR "Automation Architect" remote'
+    enabled: true
+
+  # -- Greenhouse --
+  - name: Greenhouse — AI PM
+    query: 'site:boards.greenhouse.io OR site:job-boards.greenhouse.io "AI Product Manager" OR "Senior Product Manager" AI remote'
+    enabled: true
+
+  - name: Greenhouse — SA & FDE
+    query: 'site:boards.greenhouse.io OR site:job-boards.greenhouse.io "Solutions Architect" OR "Forward Deployed" AI remote'
+    enabled: true
+
+  - name: Greenhouse — AI Engineer
+    query: 'site:boards.greenhouse.io OR site:job-boards.greenhouse.io "AI Engineer" OR "LLM" OR "Agentic" remote'
+    enabled: true
+
+  # -- Lever --
+  - name: Lever — AI PM
+    query: 'site:jobs.lever.co "AI Product Manager" OR "Solutions Architect" AI remote'
+    enabled: true
+
+  - name: Lever — AI Roles
+    query: 'site:jobs.lever.co "AI Engineer" OR "Agentic" OR "LLMOps" OR "Automation" remote'
+    enabled: true
+
+  # -- Wellfound (startups) --
+  - name: Wellfound — AI PM
+    query: 'site:wellfound.com "AI Product Manager" OR "AI Solutions" remote'
+    enabled: true
+
+  # -- Workable --
+  - name: Workable — AI Roles
+    query: 'site:apply.workable.com "AI" "Product Manager" OR "Solutions Architect" OR "AI Engineer" remote'
+    enabled: true
+
+  # -- No-Code / Low-Code / Automation --
+  - name: Ashby — No-Code & Automation
+    query: 'site:jobs.ashbyhq.com "no-code" OR "low-code" OR "automation engineer" OR "n8n" OR "Make" OR "Airtable" remote senior'
+    enabled: true
+
+  - name: Greenhouse — No-Code & Automation
+    query: 'site:job-boards.greenhouse.io "no-code" OR "low-code" OR "automation engineer" OR "business systems" senior remote'
+    enabled: true
+
+  - name: GTM Engineer — All portals
+    query: '"GTM Engineer" OR "RevOps Engineer" OR "Growth Engineer" automation Airtable OR Make OR Clay remote'
+    enabled: true
+
+  # -- Voice AI & Conversational AI --
+  - name: Voice AI — FDE & SA
+    query: 'site:job-boards.greenhouse.io OR site:jobs.ashbyhq.com "Voice AI" OR "Conversational AI" OR "Speech" "Solutions" OR "Forward Deployed" OR "Customer Engineer"'
+    enabled: true
+
+  - name: Voice AI — AI Engineer
+    query: 'site:job-boards.greenhouse.io OR site:jobs.ashbyhq.com "Voice" OR "Speech" "AI Engineer" OR "Deployment" OR "Integration"'
+    enabled: true
+
+  # -- Contact Center AI --
+  - name: Contact Center AI — SA & SE
+    query: '"contact center" OR "customer service" "AI" "Solutions Architect" OR "Solutions Engineer" OR "Forward Deployed" remote'
+    enabled: true
+
+  # -- FDE specific (cross-portal) --
+  - name: FDE & Deployed Engineer — All portals
+    query: '"Forward Deployed Engineer" OR "Deployed Engineer" OR "Deployment Engineer" AI site:job-boards.greenhouse.io OR site:jobs.ashbyhq.com OR site:jobs.lever.co'
+    enabled: true
+
+  # -- RemoteFront (aggregator) --
+  - name: RemoteFront — AI & Automation
+    query: 'site:remotefront.com "AI Engineer" OR "Solutions Engineer" OR "Automation" OR "LLM" OR "Agent" remote'
+    enabled: true
+
+# -- Tracked companies (Global / AI-first) --
+# Global and AI-first companies whose career pages are checked directly.
+# scan_method: playwright (default), websearch, greenhouse_api
+# For Greenhouse companies, add api: field for faster structured JSON access.
+
+tracked_companies_global:
+
+  # -- AI Labs & LLM providers --
+
+  - name: Anthropic
+    careers_url: https://job-boards.greenhouse.io/anthropic
+    api: https://boards-api.greenhouse.io/v1/boards/anthropic/jobs
+    enabled: true
+
+  - name: OpenAI
+    careers_url: https://openai.com/careers
+    scan_method: websearch
+    scan_query: 'site:openai.com/careers "Solutions" OR "Forward Deployed" OR "AI Engineer"'
+    enabled: true
+
+  # -- Voice AI & Conversational AI --
+
+  - name: PolyAI
+    careers_url: https://job-boards.eu.greenhouse.io/polyai
+    api: https://boards-api.greenhouse.io/v1/boards/polyai/jobs
+    notes: "UK. Voice AI for enterprise contact centers."
+    enabled: true
+
+  - name: Parloa
+    careers_url: https://job-boards.eu.greenhouse.io/parloa
+    api: https://boards-api.greenhouse.io/v1/boards/parloa/jobs
+    notes: "Berlin EMEA. Voice AI enterprise."
+    enabled: true
+
+  - name: Intercom
+    careers_url: https://job-boards.greenhouse.io/intercom
+    api: https://boards-api.greenhouse.io/v1/boards/intercom/jobs
+    notes: "Dublin EMEA. Fin AI agent."
+    enabled: true
+
+  - name: Hume AI
+    careers_url: https://job-boards.greenhouse.io/humeai
+    api: https://boards-api.greenhouse.io/v1/boards/humeai/jobs
+    notes: "NYC. Empathic voice AI."
+    enabled: true
+
+  - name: ElevenLabs
+    careers_url: https://jobs.ashbyhq.com/elevenlabs
+    scan_method: websearch
+    scan_query: 'site:jobs.ashbyhq.com/elevenlabs'
+    notes: "Voice AI TTS leader."
+    enabled: true
+
+  - name: Deepgram
+    careers_url: https://jobs.ashbyhq.com/deepgram
+    scan_method: websearch
+    scan_query: 'site:deepgram.com/careers OR "deepgram" "Solutions" OR "AI Engineer" site:jobs.ashbyhq.com'
+    notes: "STT/TTS APIs."
+    enabled: true
+
+  - name: Vapi
+    careers_url: https://jobs.ashbyhq.com/vapi
+    scan_method: websearch
+    scan_query: 'site:jobs.ashbyhq.com/vapi'
+    notes: "Voice AI infrastructure."
+    enabled: true
+
+  - name: Bland AI
+    careers_url: https://jobs.ashbyhq.com/bland
+    scan_method: websearch
+    scan_query: 'site:jobs.ashbyhq.com/bland'
+    notes: "Voice phone agents. $65M Series B."
+    enabled: true
+
+  # -- AI-native platforms (FDE/SA teams) --
+
+  - name: Retool
+    careers_url: https://retool.com/careers
+    scan_method: websearch
+    scan_query: 'site:retool.com/careers "Deployed" OR "AI" OR "Solutions"'
+    notes: "London. Popularized Deployed Engineer role."
+    enabled: true
+
+  - name: Airtable
+    careers_url: https://job-boards.greenhouse.io/airtable
+    api: https://boards-api.greenhouse.io/v1/boards/airtable/jobs
+    notes: "No-code + AI platform."
+    enabled: true
+
+  - name: Vercel
+    careers_url: https://job-boards.greenhouse.io/vercel
+    api: https://boards-api.greenhouse.io/v1/boards/vercel/jobs
+    notes: "AI SDK, v0.dev. Frontend AI tooling."
+    enabled: true
+
+  - name: Temporal
+    careers_url: https://job-boards.greenhouse.io/temporal
+    api: https://boards-api.greenhouse.io/v1/boards/temporal/jobs
+    notes: "Workflow orchestration."
+    enabled: true
+
+  - name: Arize AI
+    careers_url: https://job-boards.greenhouse.io/arizeai
+    api: https://boards-api.greenhouse.io/v1/boards/arizeai/jobs
+    notes: "LLMOps / AI observability."
+    enabled: true
+
+  - name: RunPod
+    careers_url: https://job-boards.greenhouse.io/runpod
+    api: https://boards-api.greenhouse.io/v1/boards/runpod/jobs
+    notes: "GPU cloud for AI."
+    enabled: true
+
+  - name: Glean
+    careers_url: https://job-boards.greenhouse.io/gleanwork
+    api: https://boards-api.greenhouse.io/v1/boards/gleanwork/jobs
+    notes: "Enterprise AI search."
+    enabled: true
+
+  # -- Contact Center AI & CX --
+
+  - name: Ada
+    careers_url: https://job-boards.greenhouse.io/ada
+    scan_method: websearch
+    scan_query: '"ada.cx" OR "ada" "AI" "Solutions" OR "Engineer" site:jobs.ashbyhq.com OR site:job-boards.greenhouse.io'
+    notes: "Toronto + remote. AI customer service."
+    enabled: true
+
+  - name: LivePerson
+    careers_url: https://liveperson.com/company/careers
+    scan_method: websearch
+    scan_query: 'site:liveperson.com/careers OR "liveperson" "Solutions" OR "AI" site:job-boards.greenhouse.io'
+    notes: "Remote EMEA. Conversational AI enterprise."
+    enabled: true
+
+  - name: Sierra
+    careers_url: https://jobs.ashbyhq.com/sierra
+    scan_method: websearch
+    scan_query: '"sierra.ai" "AI" "Forward Deployed" OR "Applied" OR "Solutions" site:jobs.ashbyhq.com'
+    notes: "Bret Taylor (ex-CEO Salesforce). AI customer agents."
+    enabled: true
+
+  - name: Decagon
+    careers_url: https://jobs.ashbyhq.com/decagon
+    scan_method: websearch
+    scan_query: '"decagon" "AI" "Forward Deployed" OR "Solutions" site:jobs.ashbyhq.com'
+    notes: "AI customer support agents."
+    enabled: true
+
+  # -- Enterprise comms & contact center --
+
+  - name: Talkdesk
+    careers_url: https://www.talkdesk.com/careers
+    scan_method: websearch
+    scan_query: 'site:talkdesk.com/careers "AI" OR "Solutions Architect" OR "AI Engineer"'
+    notes: "Lisbon. Contact center AI. EMEA friendly."
+    enabled: true
+
+  - name: Twilio
+    careers_url: https://www.twilio.com/en-us/company/jobs
+    scan_method: websearch
+    scan_query: 'site:twilio.com/company/jobs "AI" OR "Voice" "Solutions" OR "Architect"'
+    notes: "Voice/messaging infrastructure."
+    enabled: true
+
+  - name: Dialpad
+    careers_url: https://www.dialpad.com/careers
+    scan_method: websearch
+    scan_query: '"dialpad" "AI" "Solutions" OR "Engineer" site:job-boards.greenhouse.io OR site:jobs.ashbyhq.com'
+    notes: "Voice AI for business comms."
+    enabled: true
+
+  - name: Gong
+    careers_url: https://www.gong.io/careers
+    scan_method: websearch
+    scan_query: 'site:gong.io/careers "AI" OR "Solutions" OR "Architect"'
+    notes: "Revenue intelligence with voice AI."
+    enabled: true
+
+  - name: Genesys
+    careers_url: https://www.genesys.com/careers
+    scan_method: websearch
+    scan_query: 'site:genesys.com/careers "AI" "Solutions Architect" OR "AI Engineer"'
+    notes: "Contact center cloud + AI."
+    enabled: true
+
+  - name: Salesforce
+    careers_url: https://careers.salesforce.com
+    scan_method: websearch
+    scan_query: 'site:careers.salesforce.com "Forward Deployed" OR "AI Engineer" OR "Agentforce"'
+    notes: "Agentforce = AI agents platform."
+    enabled: true
+
+  # -- AI infra & LLMOps --
+
+  - name: Langfuse
+    careers_url: https://langfuse.com/careers
+    scan_method: websearch
+    scan_query: '"langfuse" careers OR jobs "engineer" OR "solutions"'
+    notes: "Berlin. LLMOps / observability."
+    enabled: true
+
+  - name: Lindy
+    careers_url: https://jobs.ashbyhq.com/lindy
+    scan_method: websearch
+    scan_query: '"lindy.ai" "AI" "Forward Deployed" OR "Solutions" site:jobs.ashbyhq.com'
+    notes: "AI agent management platform."
+    enabled: true
+
+  - name: Cognigy
+    careers_url: https://careers.cognigy.com
+    scan_method: websearch
+    scan_query: '"cognigy" careers "AI" OR "Solutions" OR "Engineer"'
+    notes: "Dusseldorf EMEA. Conversational AI enterprise."
+    enabled: true
+
+  - name: Speechmatics
+    careers_url: https://www.speechmatics.com/company/careers
+    scan_method: websearch
+    scan_query: '"speechmatics" careers OR jobs "engineer" OR "solutions"'
+    notes: "Cambridge UK. Speech recognition platform."
+    enabled: true
+
+  # -- No-Code/Low-Code & Automation --
+
+  - name: n8n
+    careers_url: https://jobs.ashbyhq.com/n8n
+    scan_method: websearch
+    scan_query: 'site:jobs.ashbyhq.com/n8n'
+    notes: "Berlin + remote EU/US. Workflow automation."
+    enabled: true
+
+  - name: Zapier
+    careers_url: https://jobs.ashbyhq.com/zapier
+    scan_method: websearch
+    scan_query: 'site:jobs.ashbyhq.com/zapier'
+    notes: "Remote-first. Automation platform leader."
+    enabled: true
+
+  - name: Make.com (Celonis)
+    careers_url: https://www.make.com/en/careers
+    scan_method: websearch
+    scan_query: 'site:make.com/en/careers OR "make.com" "engineer" OR "solutions" site:jobs.ashbyhq.com'
+    notes: "Celonis parent company. Automation platform."
+    enabled: true
+
+  # -- Ashby-based (Playwright direct) --
+
+  - name: Cohere
+    careers_url: https://jobs.ashbyhq.com/cohere
+    notes: "AI/LLM provider. Toronto + remote."
+    enabled: true
+
+  - name: LangChain
+    careers_url: https://jobs.ashbyhq.com/langchain
+    notes: "LangChain/LangSmith framework."
+    enabled: true
+
+  - name: Pinecone
+    careers_url: https://jobs.ashbyhq.com/pinecone
+    notes: "Vector database."
+    enabled: true
+
+  # -- Lever-based (Playwright direct) --
+
+  - name: Mistral AI
+    careers_url: https://jobs.lever.co/mistral
+    notes: "Paris. European AI lab."
+    enabled: true
+
+  - name: Weights & Biases
+    careers_url: https://jobs.lever.co/wandb
+    notes: "MLOps platform."
+    enabled: true
+
+  - name: Palantir
+    careers_url: https://jobs.lever.co/palantir
+    notes: "FDE roles. Mostly US/London."
+    enabled: true
+
+  # -- European tech (EMEA-friendly) --
+
+  - name: Factorial
+    careers_url: https://job-boards.greenhouse.io/factorial
+    scan_method: websearch
+    scan_query: 'site:jobs.greenhouse.io/factorial'
+    notes: "Barcelona. HR SaaS unicorn."
+    enabled: true
+
+  - name: Attio
+    careers_url: https://jobs.ashbyhq.com/attio
+    scan_method: websearch
+    scan_query: 'site:attio.com/careers OR site:jobs.ashbyhq.com/attio'
+    notes: "Remote EU. AI-native CRM. Series B $52M."
+    enabled: true
+
+  - name: Tinybird
+    careers_url: https://jobs.ashbyhq.com/tinybird
+    scan_method: websearch
+    scan_query: 'site:tinybird.co/careers OR site:jobs.ashbyhq.com/tinybird'
+    notes: "Remote. Real-time data platform."
+    enabled: true
+
+  - name: Clarity AI
+    careers_url: https://jobs.lever.co/clarity-ai
+    scan_method: websearch
+    scan_query: 'site:clarity.ai/careers OR site:jobs.lever.co/clarity-ai'
+    notes: "Madrid/Remote. Sustainability analytics with AI."
+    enabled: true
+
+  - name: Travelperk
+    careers_url: https://jobs.ashbyhq.com/travelperk
+    scan_method: websearch
+    scan_query: 'site:jobs.ashbyhq.com/travelperk'
+    notes: "Barcelona. Business travel unicorn."
+    enabled: true

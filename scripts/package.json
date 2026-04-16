@@ -1,0 +1,9 @@
+{
+  "name": "career-platform-scripts",
+  "version": "1.0.0",
+  "description": "Node.js scripts for PDF generation and tracker management",
+  "type": "module",
+  "dependencies": {
+    "playwright": "^1.58.1"
+  }
+}

@@ -18,6 +18,7 @@ from config.portals import verify_selectors
 from bot.telegram_bot import TelegramBot
 from state.confirmation import set_main_loop
 from api.routes import router as api_router
+from api.routes_v2 import router as api_v2_router
 from scheduler import schedule_daily_run
 
 # Configure logging
@@ -37,6 +38,12 @@ app = FastAPI(
 
 # Include API routes
 app.include_router(api_router)
+app.include_router(api_v2_router, prefix="/api/v2")
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 
 # SPA fallback — serve React from static files
@@ -59,10 +66,14 @@ async def serve_spa(full_path: str):
     return {"error": "Frontend not built. Run: cd frontend && npm run build"}
 
 
-# Mount static files if they exist
+# Mount static files
 frontend_dist = Path(__file__).parent / "frontend" / "dist"
 if frontend_dist.exists():
     app.mount("/assets", StaticFiles(directory=frontend_dist / "assets"), name="assets")
+
+static_fonts = Path(__file__).parent / "static" / "fonts"
+if static_fonts.exists():
+    app.mount("/static/fonts", StaticFiles(directory=static_fonts), name="fonts")
 
 
 async def run_telegram_bot():
